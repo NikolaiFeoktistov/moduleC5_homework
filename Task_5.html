@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Задание C5.7</title>
+</head>
+<body>
+<h1>Приложение «Галерея изображений»</h1>
+<div>
+    <label for="pageNumber" lang="ru">Номер страницы:</label>
+    <input type="number" id="pageNumber" min="1" max="10">
+</div>
+<div>
+    <label for="limit" lang="ru">Лимит:</label>
+    <input type="number" id="limit" min="1" max="10">
+</div>
+<button id="submitButton">Запрос</button>
+<div id="errorText" style="color: red;"></div>
+<div id="imageGallery"></div>
+
+<script>
+    // Функция для выполнения запроса и отображения изображений
+    function fetchImages() {
+        const pageNumber = parseInt(document.getElementById("pageNumber").value);
+        const limit = parseInt(document.getElementById("limit").value);
+
+        // Проверка введенных чисел
+        if (isNaN(pageNumber) || pageNumber < 1 || pageNumber > 10 || isNaN(limit) || limit < 1 || limit > 10) {
+            document.getElementById("errorText").innerText = "Номер страницы и/или лимит вне диапазона от 1 до 10";
+            return;
+        }
+
+        // Сброс текста ошибки
+        document.getElementById("errorText").innerText = "";
+
+        // Выполнение запроса к API Picsum
+        fetch(`https://picsum.photos/v2/list?page=${pageNumber}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                const imageGallery = document.getElementById("imageGallery");
+                imageGallery.innerHTML = ""; // Очистка галереи перед добавлением новых изображений
+
+                // Отображение полученных изображений
+                data.forEach(image => {
+                    const imgElement = document.createElement("img");
+                    imgElement.src = image.download_url;
+                    imageGallery.appendChild(imgElement);
+                });
+
+                // Сохранение данных в localStorage
+                localStorage.setItem("lastImages", JSON.stringify(data));
+            })
+            .catch(error => {
+                console.error("Ошибка при выполнении запроса:", error);
+            });
+    }
+
+    // Обработка нажатия кнопки
+    document.getElementById("submitButton").addEventListener("click", fetchImages);
+
+    // Проверка localStorage при загрузке страницы
+    const lastImagesData = localStorage.getItem("lastImages");
+    if (lastImagesData) {
+        const lastImages = JSON.parse(lastImagesData);
+        const imageGallery = document.getElementById("imageGallery");
+        lastImages.forEach(image => {
+            const imgElement = document.createElement("img");
+            imgElement.src = image.download_url;
+            imageGallery.appendChild(imgElement);
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>XML to JS</title>
+</head>
+<body>
+<script>
+    const xmlString = `
+      <list>
+        <student>
+          <name lang="en">
+            <first>Ivan</first>
+            <second>Ivanov</second>
+          </name>
+          <age>35</age>
+          <prof>teacher</prof>
+        </student>
+        <student>
+          <name lang="ru">
+            <first>Петр</first>
+            <second>Петров</second>
+          </name>
+          <age>58</age>
+          <prof>driver</prof>
+        </student>
+      </list>
+    `;
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
+
+    const students = xmlDoc.querySelectorAll('student');
+    const result = {
+        list: []
+    };
+
+    students.forEach(student => {
+        const nameElement = student.querySelector('name');
+        const firstName = nameElement.querySelector('first').textContent;
+        const secondName = nameElement.querySelector('second').textContent;
+        const age = parseInt(student.querySelector('age').textContent);
+        const prof = student.querySelector('prof').textContent;
+        const lang = nameElement.getAttribute('lang');
+
+        result.list.push({
+            name: `${firstName} ${secondName}`,
+            age,
+            prof,
+            lang
+        });
+    });
+
+    console.log(result);
+</script>
+</body>
+</html>

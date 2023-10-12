@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Задание C5.6</title>
+</head>
+<body>
+
+<div class='input'>
+    <input id='first_input' type="text" placeholder="Введите сюда число от 100">
+    <p></p>
+    <br>
+    <input id='second_input' type="text" placeholder="Сюда число до 300">
+    <br>
+</div>
+<div class="wraper_button">
+    <button class='btn'>Загрузить изображение</button>
+</div>
+
+
+<div id='content'>
+    <p>Результат запроса</p>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+<script>
+    'use strict';
+
+    const btn = document.querySelector('.btn');
+    const contentNode = document.querySelector('#content');
+
+    function useRequest(firstInput, secondInput) {
+        return fetch(`https://picsum.photos/${firstInput}/${secondInput}`)
+            .then(response => response.blob())
+            .then(blob => URL.createObjectURL(blob))
+            .catch(() => {
+                console.log('error')
+                contentNode.innerHTML = '<p> Что-то пошло не так</p>'
+            })
+    }
+
+    btn.addEventListener('click', async () => {
+        const inputWidth = document.querySelector('#first_input').value;
+        const inputHeight = document.querySelector('#second_input').value;
+        let minSize = 100,
+            maxSize = 300;
+        if ((inputWidth >= minSize && inputWidth <= maxSize) && (inputHeight >= minSize && inputHeight <= maxSize)){
+            const url = await useRequest(inputWidth, inputHeight)
+            contentNode.innerHTML = `
+      <img src='${url}' alt='image'>`
+        } else {
+            contentNode.innerHTML = `
+      <p>Одно из чисел вне диапазона от ${minSize} до ${maxSize}</p>`
+        }
+    });
+</script>
